@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
-
+const fs = require('fs');
 //express instance
 const app = express();
 app.use(bodyParser.json({limit:'10mb'}));
@@ -18,7 +18,13 @@ app.get('/', (req, res) => {
     console.log("Welcome to home");
     res.json({code:200,msg:'Welcome to puglist'})
 });
-
+//loding routes
+fs.readdirSync('./routes').forEach((file) => {
+    if (file.split('.').pop() === 'js') {
+        //console.log('adding route file: %s', file);
+        app.use('/v1', require('./routes/' + file));
+    }
+});
 
 
 
