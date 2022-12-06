@@ -8,7 +8,7 @@ const knexConfig = {
             password: 'root',
             database: 'puglist',
 	    /*options: {*/
-            port:3309
+            port:3306
             //}
         },
         migrations: {

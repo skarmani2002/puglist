@@ -12,8 +12,9 @@ const validations = {
     register: Joi.compile({
         name: Joi.string().required(),
         email: Joi.string().max(50),
-        password: Joi.string().email().required(),
-       // gender: Joi.string().valid(['m', 'f']),
+        password: Joi.string().required(),
+        gender: Joi.string().optional(),
+        profile_pic: Joi.string().optional(),
     }),
     
     

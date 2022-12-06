@@ -4,13 +4,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
 const fs = require('fs');
+const errors = require("./errors/response-errors");
 //express instance
 const app = express();
 app.use(bodyParser.json({limit:'10mb'}));
 app.use(bodyParser.urlencoded({limit:'50mb', extended: false}));
 app.use(express.json());
-
-
+global.knex = require('./db/knex');
+global.errors = errors;
+let db = global.knex;
 
 
 //base route

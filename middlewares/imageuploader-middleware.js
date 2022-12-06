@@ -11,7 +11,7 @@ const util = require('util');
  const uploadPath = __dirname + "/../storage/";
 const Joi = require("joi");
 const mkdir = util.promisify(fs.mkdir);
-
+const errors = require("../errors/response-errors");
 const uploadMedia = (media, option) => {
 
     let storage = multer.diskStorage({
@@ -62,6 +62,7 @@ const uploadMedia = (media, option) => {
             let ext = file.originalname.substr(file.originalname.lastIndexOf('.'));
 
             if (overridefilename) {
+                req.body.profile_pic = fileStorageName + ext 
                 cb(null, (!_.isEmpty(fileStorageName)) ? fileStorageName + ext : file.originalname)
             } else {
                 cb(null, (fileStorageName || name) + '-' + (new Date()).getTime() + ext)
@@ -87,6 +88,7 @@ const uploadMedia = (media, option) => {
             cb(null, true);
         }
     });
+
     return upload.single(media);
 };
 
@@ -115,7 +117,7 @@ const validations = {
 const uploadUserImage = (upFileName, upconfig) => {
     return uploadMedia(upFileName, {
         fileName: (req) => {
-            return `${upconfig.customFileName}`;
+            return `${upconfig.customFileName}`+Date.now()
         },
         destination: (req, cb) => {
                 cb(`${upconfig.path}`);
