@@ -26,11 +26,18 @@ router.post('/user/register',
     UserValidation,
     user_controller.register.bind(user_controller));
 
+router.post('/user/facebook_registration',
+  //  auth_manager.Authenticate.bind(auth_manager),
+    UserValidation,
+    user_controller.registerFb.bind(user_controller));
+ 
+
 router.get('/user/profile',
-    auth_manager.Authenticate.bind(auth_manager),
+  auth_manager.Authenticate.bind(auth_manager),
+    //UserValidation,
     user_controller.profile.bind(user_controller));
-
-
+   
+  
 
 
 

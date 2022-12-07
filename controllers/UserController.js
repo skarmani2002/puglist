@@ -81,7 +81,6 @@ class UserController {
   }
   async profile(req,res,next){
     try{
-      console.log("sd",req.user);
       let user = await this.model_user.Get({email:req.user.email});
       delete user.password;
       this.getProfilePicUrl(user);
@@ -89,6 +88,42 @@ class UserController {
     }catch(ex){
       console.log(ex,"-----------");
       next(this.errors.getError("ESS50001", ex));
+    }
+  }
+  async registerFb(req,res,next){
+    try{
+        let data = req.body;
+        let user = await this.model_user.Get({facebook_id:data.facebook_id});
+        let response ;
+        if(user){
+          const token = await this.createToken(user)
+          delete user.password;
+          user.token = token.accessToken;
+           response = {
+            status: false,
+            msg : "User already exists",
+            code:200,
+            userObj: user
+          }
+        }else{
+          let userData = { facebook_id:data.facebook_id,name : data.name , profile_pic: data.profile_pic,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP")};
+          let insertUser = await this.model_user.Create(userData);
+          let user = await this.model_user.Get({email:data.email});
+          this.getProfilePicUrl(user);
+          let token = await this.createToken(user);
+          user.token = token.accessToken;
+          delete user.password;
+          response = {
+            status: true,
+            msg : "User created successfully",
+            code:200,
+            userObj: user
+          }
+
+        }
+        res.json(response)
+    }catch(ex){
+      console.log("Exception in FB register",ex);
     }
   }
   async createToken(user) {
