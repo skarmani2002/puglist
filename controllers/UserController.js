@@ -6,13 +6,33 @@ const path = require( "path" );
 const fs = require( 'fs' );
 class UserController {
   constructor() {
-    this.model_user = new ModelUser();
-    this.errors = errors
+    this.model_user   = new ModelUser();
+    this.errors       = errors
+    this.knex         = global.knex
   }
 
   async login(req, res, next) {
     try {
-
+      let user = await this.model_user.Get({email:req.body.email})
+      let password = req.body.password;
+      if (user && (await bcrypt.compare(password, user.password))) {
+        // Create token
+        const token = jwt.sign(
+          { user_id: user.id, email:user.email },
+          process.env.TOKEN_KEY,
+          {
+            expiresIn: process.env.EXPIRE_IN
+          }
+        );
+         // save user token
+         user.token = token;
+         delete user.password;
+         this.getProfilePicUrl(user);
+         res.json({code:200, status:"ok", userObj: user})
+      }
+     return  next(this.errors.getError("ESS42204"));
+  
+       
     } catch (ex) {
       console.log(ex,"-----------");
       next(this.errors.getError("ESS50001", ex));
@@ -35,17 +55,13 @@ class UserController {
           gender      : data.gender,
           profile_pic : data.profile_pic,
           status      : 1,
-         // created_at  : new Date().getTime(),
-         // updated_at  : new Date().getTime() 
+          created_at  :this.knex.raw("CURRENT_TIMESTAMP"),
+          updated_at  : this.knex.raw("CURRENT_TIMESTAMP")
       }
 
       let insertUser = await this.model_user.Create(userObj);
       let user = await this.model_user.Get({email:data.email});
-      
-      const filename = path.basename( user.profile_pic );
-      let folder = 'C:/Projects/puglist/storage/users';
-      const absolutePath = path.resolve( folder, filename );
-      user.profile_pic =absolutePath
+      this.getProfilePicUrl(user);
       let createToken = await this.createToken(user);
       delete user.password;
 
@@ -63,16 +79,41 @@ class UserController {
       next(this.errors.getError("ESS50001", ex));
     }
   }
+  async profile(req,res,next){
+    try{
+      console.log("sd",req.user);
+      let user = await this.model_user.Get({email:req.user.email});
+      delete user.password;
+      this.getProfilePicUrl(user);
+      res.json({code:200, status:"ok", userObj: user})
+    }catch(ex){
+      console.log(ex,"-----------");
+      next(this.errors.getError("ESS50001", ex));
+    }
+  }
   async createToken(user) {
-    const secret= '$ecret2021'
-    const expiresIn=  '86400'
-    const userAdd = { id: user. id ,email:user.email };
+    const secret= process.env.TOKEN_KEY;
+    const expiresIn=   process.env.EXPIRE_IN
+    const userAdd = { id: user.id ,email:user.email };
     const accessToken = jwt.sign(userAdd, secret);
     return {
         expiresIn,
         accessToken,
     };
-}
+  }
+  getProfilePicUrl(user){
+    try{
+      const filename = path.basename( user.profile_pic );
+      let folder = './storage/users';
+      const absolutePath = path.resolve( folder, filename );
+      user.profile_pic = absolutePath
+    }catch(ex){
+      console.log("Error in get profile pic",ex);
+      return "";
+    }
+       
+
+  }
 
   
 }
