@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const path = require( "path" );
 const fs = require( 'fs' );
+const   admin =require('firebase-admin');
 class UserController {
   constructor() {
     this.model_user   = new ModelUser();
@@ -93,6 +94,14 @@ class UserController {
   async registerFb(req,res,next){
     try{
         let data = req.body;
+        console.log(await this.verifyAccessToken(data.token))
+        let accessTokenFlag =false;
+       // let accessTokenFlag = (await this.verifyAccessToken(data.token) === data.user.uid) ? true : false;
+        //console.log("Ree",accessTokenFlag)
+        if (!accessTokenFlag) {
+                next(this.errors.getError("ESS50001"));
+        }
+        return;
         let user = await this.model_user.Get({facebook_id:data.facebook_id});
         let response ;
         if(user){
@@ -125,6 +134,11 @@ class UserController {
     }catch(ex){
       console.log("Exception in FB register",ex);
     }
+  }
+  async verifyAccessToken(token){
+    let jwtObject = jwt.decode(token);
+    return jwtObject.user_id;
+
   }
   async createToken(user) {
     const secret= process.env.TOKEN_KEY;

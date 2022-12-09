@@ -18,6 +18,7 @@ const validations = {
         facebook_id : Joi.required(),
         profile_pic : Joi.string().optional(),
         email        : Joi.string().required(),
+        access_token: Joi.string().optional(),
     })
     
     
