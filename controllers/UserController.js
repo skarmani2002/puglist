@@ -94,43 +94,51 @@ class UserController {
   async registerFb(req,res,next){
     try{
         let data = req.body;
-        console.log(await this.verifyAccessToken(data.token))
-        let accessTokenFlag =false;
-       // let accessTokenFlag = (await this.verifyAccessToken(data.token) === data.user.uid) ? true : false;
+        let accessTokenFlag = (await this.verifyAccessToken(data.token) === data.uid) ? true : false;
         //console.log("Ree",accessTokenFlag)
         if (!accessTokenFlag) {
-                next(this.errors.getError("ESS50001"));
+                next(this.errors.getError("ESS42206"));
         }
-        return;
-        let user = await this.model_user.Get({facebook_id:data.facebook_id});
+        let user = await this.model_user.Get({email:data.email,facebook_id:data.uid});
+        console.log("USER",user)
         let response ;
-        if(user){
-          const token = await this.createToken(user)
-          delete user.password;
-          user.token = token.accessToken;
-           response = {
-            status: false,
-            msg : "User already exists",
-            code:200,
-            userObj: user
-          }
-        }else{
-          let userData = { facebook_id:data.facebook_id,name : data.name , profile_pic: data.profile_pic,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP")};
+        if(!user){
+          console.log("test")
+          let userData = { facebook_id:data.uid,name : data.fullName , profile_pic: data.photoUrl,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP")};
           let insertUser = await this.model_user.Create(userData);
-          let user = await this.model_user.Get({email:data.email});
-          this.getProfilePicUrl(user);
-          let token = await this.createToken(user);
-          user.token = token.accessToken;
+          let user = await this.model_user.Get({facebook_id:data.uid,email:data.email});
+          user.token = data.token;
+          let createToken = await this.createToken(user);
+          user.access_token  = createToken.accessToken;
+  
           delete user.password;
           response = {
             status: true,
             msg : "User created successfully",
             code:200,
-            userObj: user
+            userObj: user,
+            isAccountCreated : true 
           }
-
+        }else{
+          if(user.profile_pic !== data.photoUrl){
+            user.profile_pic = data.photoUrl;
+            await this.model_user.Update({profile_pic:data.photoUrl},{email:user.email,facebook_id:data.uid})
         }
-        res.json(response)
+        delete user.password;
+        let createToken = await this.createToken(user);
+        user.access_token  = createToken.accessToken;
+
+        user.token = data.token;
+        response = {
+          status: true,
+          msg : "User Login Successfull",
+          code:200,
+          userObj: user,
+          isAccountCreated : true 
+        }
+      }
+      
+      res.json(response)
     }catch(ex){
       console.log("Exception in FB register",ex);
     }

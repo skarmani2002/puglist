@@ -73,6 +73,12 @@ const customErrors = {
         error_summary: `Invalid Credentials`,
         error_message: `Invalid Credentials.`
     },
+    ESS42207: {
+        status: 422,
+        error_code: `ESS42207`,
+        error_summary: `Invalid Credentials`,
+        error_message: `Invalid Credentials.`
+    },
     
     
    
