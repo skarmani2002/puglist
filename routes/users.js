@@ -20,7 +20,7 @@ router.post('/user/login',
 router.post('/user/register',
    uploader.uploadUserImage('profile_pic', {
     customFileName: "profile_pic",
-    path: "/users",
+    path: "",
     overideFileName: false
 }),
     UserValidation,

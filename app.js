@@ -7,9 +7,13 @@ const fs = require('fs');
 const errors = require("./errors/response-errors");
 //express instance
 const app = express();
+
+app.use(express.static(__dirname + '/upload'));
+app.use('/v1/upload', express.static('upload'));
 app.use(bodyParser.json({limit:'10mb'}));
 app.use(bodyParser.urlencoded({limit:'50mb', extended: false}));
 app.use(express.json());
+
 global.knex = require('./db/knex');
 global.errors = errors;
 let db = global.knex;

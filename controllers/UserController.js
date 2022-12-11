@@ -181,13 +181,17 @@ class UserController {
   }
   getProfilePicUrl(user){
     try{
-      const filename = path.basename( user.profile_pic );
-      let folder = './storage/users';
-      const absolutePath = path.resolve( folder, filename );
-      user.profile_pic = absolutePath
+      let path = "";
+      if(user.profile_pic){
+        path = process.env.BASE_URL+"upload/"+user.profile_pic;
+      }
+    
+      user.profile_pic = path;
     }catch(ex){
       console.log("Error in get profile pic",ex);
+      user.profile_pic = "";
       return "";
+
     }
        
 
