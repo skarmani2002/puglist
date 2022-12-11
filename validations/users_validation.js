@@ -14,12 +14,16 @@ const validations = {
         profile_pic : Joi.string().optional(),
     }),
     facebook_registration: Joi.compile({
-        name        : Joi.string().required(),
-        facebook_id : Joi.required(),
-        profile_pic : Joi.string().optional(),
-        email        : Joi.string().required(),
-        access_token: Joi.string().optional(),
-    })
+        fullName        : Joi.string().required(),
+        uid             : Joi.required(),
+        photoUrl        : Joi.string().optional(),
+        email           : Joi.string().required(),
+        token           : Joi.string().optional(),
+    }),
+    update_password: Joi.compile({
+        oldPassword        : Joi.string().required(),
+        newPassword        : Joi.string().required(),
+    }),
     
     
 };

@@ -4,14 +4,12 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 const path = require( "path" );
 const fs = require( 'fs' );
-const   admin =require('firebase-admin');
 class UserController {
   constructor() {
     this.model_user   = new ModelUser();
     this.errors       = errors
     this.knex         = global.knex
   }
-
   async login(req, res, next) {
     try {
       let user = await this.model_user.Get({email:req.body.email})
@@ -26,14 +24,13 @@ class UserController {
           }
         );
          // save user token
-         user.token = token;
+         user.access_token = token;
          delete user.password;
          this.getProfilePicUrl(user);
          res.json({code:200, status:"ok", userObj: user})
       }
      return  next(this.errors.getError("ESS42204"));
   
-       
     } catch (ex) {
       console.log(ex,"-----------");
       next(this.errors.getError("ESS50001", ex));
@@ -65,8 +62,8 @@ class UserController {
       this.getProfilePicUrl(user);
       let createToken = await this.createToken(user);
       delete user.password;
+      user.access_token  = createToken.accessToken;
 
-      user.token  = createToken.accessToken;
       if(insertUser){
         res.json({
           code:200, 
@@ -142,6 +139,30 @@ class UserController {
     }catch(ex){
       console.log("Exception in FB register",ex);
     }
+  }
+  async updatePassword(req,res,next){
+    try{
+      let user = req.user;
+      let data = req.body;
+      let verifyUser = await this.model_user.Get({id:user.user_id})
+      console.log("EXist user",verifyUser);
+      if(!verifyUser){
+        return next(this.errors.getError("ESS42204"));
+      }
+      const areEqual = await bcrypt.compare(data.oldPassword, verifyUser.password);
+      if (!areEqual) {
+          return next(this.errors.getError("ESS42207"));
+      } else {
+          let encryptedPassword = await bcrypt.hash(data.newPassword,10);
+          await this.model_user.Update({password:encryptedPassword},{id:user.user_id})
+          res.json({code:200, status:'ok', msg : "Password Changed Successfully!"})
+      }
+
+    }catch(ex){
+      console.log(ex);
+      next(this.errors.getError("ESS50001", ex));
+    }
+
   }
   async verifyAccessToken(token){
     let jwtObject = jwt.decode(token);

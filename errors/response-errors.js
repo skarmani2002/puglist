@@ -76,9 +76,10 @@ const customErrors = {
     ESS42207: {
         status: 422,
         error_code: `ESS42207`,
-        error_summary: `Invalid Credentials`,
-        error_message: `Invalid Credentials.`
+        error_summary: "Current Password didn`t match!",
+        error_message: "Current Password didn`t match!"
     },
+    
     
     
    
