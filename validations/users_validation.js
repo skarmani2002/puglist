@@ -24,6 +24,19 @@ const validations = {
         oldPassword        : Joi.string().required(),
         newPassword        : Joi.string().required(),
     }),
+    forgetPassword: Joi.compile({
+        email        : Joi.string().email().required(),
+    }),
+    veryToken: Joi.compile({
+        email        : Joi.string().email().required(),
+        token        : Joi.required(),
+    }),
+    resetPassword: Joi.compile({
+        email           : Joi.string().email().required(),
+        password        : Joi.string().required(),
+        confirmPassword : Joi.string().required(),
+    }),
+    
     
     
 };

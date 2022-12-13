@@ -6,8 +6,6 @@ const UserController = require('../controllers/UserController');
 const UserValidation = require('../validations/users_validation');
 const uploader = require('../middlewares/imageuploader-middleware');
 
-//const uploader = require('../middlewares/imageuploader-middleware');
-
 let user_controller                     = new UserController();
 let auth_manager                        = new AuthManager();
 
@@ -42,9 +40,23 @@ router.get('/user/profile',
   UserValidation,
   user_controller.updatePassword.bind(user_controller));
 
-   
+  router.post('/user/forgetPassword',
+  UserValidation,
+  user_controller.forgetPassword.bind(user_controller));
+
+  router.post('/user/veryToken',
+  UserValidation,
+  user_controller.verifyToken.bind(user_controller));
+  
+  router.post('/user/resetPassword',
+  UserValidation,
+  user_controller.resetPassword.bind(user_controller));
+
   
 
+ 
+  
+  
 
 
 

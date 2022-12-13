@@ -2,11 +2,9 @@ const Joi = require("joi");
 const errors = require("../errors/response-errors");
 module.exports = (req, res, next, validations) => {
     let rules = Object.keys(validations);
-    console.log("rule",rules);
     //check for available route in request
     for (var i = 0; i < rules.length; i++) {
         let rule = rules[i];
-        console.log("rule2",req.path,rule);
         //if a rule for that route is defined
         if (req.path.includes(rule)) {
             var data;

@@ -79,6 +79,18 @@ const customErrors = {
         error_summary: "Current Password didn`t match!",
         error_message: "Current Password didn`t match!"
     },
+    ESS42208: {
+        status: 422,
+        error_code: `ESS42208`,
+        error_summary: "Invalid Token!",
+        error_message: "Invalid Token!"
+    },
+    ESS42209: {
+        status: 422,
+        error_code: `ESS42209`,
+        error_summary: "Password doesnt match with confirm password.",
+        error_message: "Password doesnt match with confirm password."
+    },
     
     
     
