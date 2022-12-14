@@ -26,10 +26,9 @@ class UserController {
           }
         );
          // save user token
-         user.access_token = token;
-         delete user.password;
-         this.getProfilePicUrl(user);
-         res.json({code:200, status:"ok", userObj: user})
+         let userObj = await this.getProfile({email:req.body.email});
+         userObj.access_token = token;
+         res.json({code:200, status:"ok", userObj: userObj})
       }
      return  next(this.errors.getError("ESS42204"));
   
@@ -55,17 +54,14 @@ class UserController {
           gender      : data.gender,
           profile_pic : data.profile_pic,
           status      : 1,
-          created_at  :this.knex.raw("CURRENT_TIMESTAMP"),
+          created_at  : this.knex.raw("CURRENT_TIMESTAMP"),
           updated_at  : this.knex.raw("CURRENT_TIMESTAMP")
       }
 
       let insertUser = await this.model_user.Create(userObj);
-      let user = await this.model_user.Get({email:data.email});
-      this.getProfilePicUrl(user);
+      let user = await this.getProfile({email:data.email});
       let createToken = await this.createToken(user);
-      delete user.password;
       user.access_token  = createToken.accessToken;
-
       if(insertUser){
         res.json({
           code:200, 
@@ -81,10 +77,8 @@ class UserController {
   }
   async profile(req,res,next){
     try{
-      let user = await this.model_user.Get({email:req.user.email});
-      delete user.password;
-      this.getProfilePicUrl(user);
-      res.json({code:200, status:"ok", userObj: user})
+      let user = await this.getProfile({email:req.user.user_id});
+       res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
       next(this.errors.getError("ESS50001", ex));
@@ -228,12 +222,36 @@ class UserController {
     }
 
   }
+  async updateProfile(req,res,next){
+    try{
+      let user_id = req.user.user_id;
+      req.body.updated_at = this.knex.raw("CURRENT_TIMESTAMP");
+      let updateUser = await this.model_user.Update(req.body,{id:user_id});
+      if(updateUser){
+        let userObj = await this.getProfile({id:user_id});
+        res.json({code:200, status:'ok', msg:'User updated successfully.', userObj:userObj})
+      }
+    }catch(ex){
+      console.log(ex);
+      next(this.errors.getError("ESS50001", ex));
+    }
+
+  }
   async verifyAccessToken(token){
     let jwtObject = jwt.decode(token);
     return jwtObject.user_id;
 
   }
 
+  async getProfile(obj){
+    let userObj = await this.model_user.Get(obj);
+    delete userObj.password;
+    delete userObj.newPasswordToken;
+    delete userObj.forgetPasswordTimestamp;
+    this.getProfilePicUrl(userObj);
+    return userObj;
+
+  }
   async createToken(user) {
     const secret= process.env.TOKEN_KEY;
     const expiresIn=   process.env.EXPIRE_IN

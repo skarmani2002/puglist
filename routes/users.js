@@ -11,6 +11,7 @@ let auth_manager                        = new AuthManager();
 
 
 router.post('/user/login',
+    auth_manager.Authenticate.bind(auth_manager),
     UserValidation,
     user_controller.login.bind(user_controller));
 
@@ -51,6 +52,17 @@ router.get('/user/profile',
   router.post('/user/resetPassword',
   UserValidation,
   user_controller.resetPassword.bind(user_controller));
+
+  router.post('/user/updateProfile',
+  auth_manager.Authenticate.bind(auth_manager),
+  UserValidation,
+  uploader.uploadUserImage('profile_pic', {
+    customFileName: "profile_pic",
+    path: "",
+    overideFileName: false
+  }),
+  user_controller.updateProfile.bind(user_controller));
+
 
   
 

@@ -36,6 +36,16 @@ const validations = {
         password        : Joi.string().required(),
         confirmPassword : Joi.string().required(),
     }),
+    updateProfile: Joi.compile({
+        name        : Joi.optional(),
+        email       : Joi.optional(),
+        gender      : Joi.optional(),
+        profile_pic : Joi.optional(),
+        about       : Joi.optional(),
+        longitude   : Joi.optional(),
+        lattitude   : Joi.optional()
+    }),
+    
     
     
     

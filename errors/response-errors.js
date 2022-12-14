@@ -1,6 +1,12 @@
 const _ = require("underscore");
 
 const customErrors = {
+    ESS50001: {
+        status: 400,
+        error_code: `ESS50001`,
+        error_summary: `The Authorization token has been expired.`,
+        error_message: `The Authorization token has been expired.`
+    },
     ESS40002: {
         status: 400,
         error_code: `ESS40002`,
