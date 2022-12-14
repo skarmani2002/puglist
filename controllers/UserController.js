@@ -248,6 +248,7 @@ class UserController {
     delete userObj.password;
     delete userObj.newPasswordToken;
     delete userObj.forgetPasswordTimestamp;
+    delete userObj.password_token;
     this.getProfilePicUrl(userObj);
     return userObj;
 
