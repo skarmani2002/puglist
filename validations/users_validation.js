@@ -43,7 +43,8 @@ const validations = {
         profile_pic : Joi.optional(),
         about       : Joi.optional(),
         longitude   : Joi.optional(),
-        latitude   : Joi.optional()
+        latitude    : Joi.optional(),
+        dob          : Joi.optional()
     }),
     
     

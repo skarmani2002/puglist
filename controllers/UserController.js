@@ -77,7 +77,7 @@ class UserController {
   }
   async profile(req,res,next){
     try{
-      let user = await this.getProfile({email:req.user.user_id});
+      let user = await this.getProfile({id:req.user.user_id});
        res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
@@ -244,9 +244,11 @@ class UserController {
   }
 
   async getProfile(obj){
+    console.log("OBB",obj)
     let userObj = await this.model_user.Get(obj);
+
     delete userObj.password;
-    delete userObj.newPasswordToken;
+    delete userObj.newPasswordTsoken;
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
     this.getProfilePicUrl(userObj);
