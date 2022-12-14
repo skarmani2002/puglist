@@ -11,7 +11,7 @@ let auth_manager                        = new AuthManager();
 
 
 router.post('/user/login',
-    auth_manager.Authenticate.bind(auth_manager),
+   // auth_manager.Authenticate.bind(auth_manager),
     UserValidation,
     user_controller.login.bind(user_controller));
 
