@@ -63,6 +63,10 @@ router.get('/user/profile',
   }),
   user_controller.updateProfile.bind(user_controller));
 
+  router.get('/users',
+  user_controller.getAllUsers.bind(user_controller));
+
+
 
   
 

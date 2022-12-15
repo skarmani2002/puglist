@@ -34,7 +34,7 @@ class UserController {
   
     } catch (ex) {
       console.log(ex,"-----------");
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
   }
   async register(req, res, next) {
@@ -72,7 +72,7 @@ class UserController {
     } catch (ex) {
       console.log(ex);
       
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
   }
   async profile(req,res,next){
@@ -81,7 +81,7 @@ class UserController {
        res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
   }
   async registerFb(req,res,next){
@@ -154,7 +154,7 @@ class UserController {
 
     }catch(ex){
       console.log(ex);
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
 
   }
@@ -174,7 +174,7 @@ class UserController {
       }
     }catch(ex){
       console.log(ex);
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
 
   }
@@ -190,7 +190,7 @@ class UserController {
       
     }catch(ex){
       console.log(ex);
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42205", ex));
     }
 
   }
@@ -236,6 +236,23 @@ class UserController {
       next(this.errors.getError("ESS50001", ex));
     }
 
+  }
+  async getAllUsers(req,res,next){
+    try{
+      let users = await this.model_user.GetAll({status:1});
+      for(let user of users){
+        user =  await this.getProfilePicUrl(user)
+      }
+      if(users){
+        res.json({code:200,status:'ok',userObj:users});
+      }
+
+    next(this.errors.getError("ESS50001", ex));
+
+    }catch(ex){
+      console.log(ex);
+      next(this.errors.getError("ESS42205", ex));
+    }
   }
   async verifyAccessToken(token){
     let jwtObject = jwt.decode(token);

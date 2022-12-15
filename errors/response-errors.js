@@ -97,6 +97,12 @@ const customErrors = {
         error_summary: "Password doesnt match with confirm password.",
         error_message: "Password doesnt match with confirm password."
     },
+    ESS42210: {
+        status: 422,
+        error_code: `ESS42210`,
+        error_summary: "Users not found.",
+        error_message: "Users not found."
+    },
     
     
     

@@ -12,7 +12,7 @@ class ModelUser {
         return users && users.length > 0 ? users[0] : null;
     }
     async GetAll(where) {
-        return await this.knex(this.table).select().where(where);
+        return await this.knex(this.table).select('id','name','email','gender','profile_pic').where(where);
     }
         async Create(data) {
         return await this.knex(this.table).returning('id').insert(data);
