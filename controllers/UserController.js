@@ -77,7 +77,7 @@ class UserController {
   }
   async profile(req,res,next){
     try{
-      let user = await this.getProfile({id:req.user.user_id});
+      let user = await this.getProfile({id:req.user.id});
        res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
