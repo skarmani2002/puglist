@@ -1,10 +1,12 @@
 'use strict';
 const jwt = require("jsonwebtoken");
+let userModel = require('../models/Users');
 class AuthManager {
 
     constructor() {
         // setup up some constants
         this.errors = global.errors;
+        this.user_model = new userModel();
     }
 
     // this only checks the auth, but doesn't block the api call
@@ -44,8 +46,12 @@ class AuthManager {
          // check if auth header is valid
             const decoded = jwt.verify(token, process.env.TOKEN_KEY);
             console.log("RRRR",decoded);
-            req.user = decoded;
-            isAuthenticated= true;
+            let verifyUserDb = await  this.user_model.Get({email:decoded.email});
+            if(verifyUserDb){
+                req.user = verifyUserDb;
+                isAuthenticated= true;
+            }
+            
         }catch(ex){
             console.log("Exception authentication",ex)
             isAuthenticated = false;
