@@ -240,15 +240,15 @@ class UserController {
   async getAllUsers(req,res,next){
     try{
       let users = await this.model_user.GetAll({status:1});
+      let repsonse = {code:404, status:false, msg: "Users not found", userObj:[{}]}
       for(let user of users){
         user =  await this.getProfilePicUrl(user)
       }
       if(users){
-        res.json({code:200,status:'ok',userObj:users});
+        repsonse = {code:200,status:'ok',userObj:users};
+        
       }
-
-    next(this.errors.getError("ESS50001", ex));
-
+    res.json(repsonse);
     }catch(ex){
       console.log(ex);
       next(this.errors.getError("ESS42205", ex));
