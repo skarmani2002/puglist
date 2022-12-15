@@ -268,7 +268,10 @@ class UserController {
     delete userObj.newPasswordTsoken;
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
-    this.getProfilePicUrl(userObj);
+    if(userObj.facebook_id ==null){
+      this.getProfilePicUrl(userObj);
+    }
+    
     return userObj;
 
   }
