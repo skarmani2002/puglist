@@ -6,7 +6,6 @@ const path        = require( "path" );
 const fs          = require( 'fs' );
 let emailHelper   = require('../helpers/email-helper');
 const ModelMatch  = require('../models/Match');
-const { data } = require("../../v4-shop/config/winston");
 
 class UserController {
   constructor() {
