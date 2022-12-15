@@ -1,16 +1,20 @@
 "use strict";
-const ModelUser = require("../models/Users");
-const jwt = require('jsonwebtoken');
-const bcrypt = require("bcrypt");
-const path = require( "path" );
-const fs = require( 'fs' );
-let emailHelper = require('../helpers/email-helper');
+const ModelUser   = require("../models/Users");
+const jwt         = require('jsonwebtoken');
+const bcrypt      = require("bcrypt");
+const path        = require( "path" );
+const fs          = require( 'fs' );
+let emailHelper   = require('../helpers/email-helper');
+const ModelMatch  = require('../models/Match');
+const { data } = require("../../v4-shop/config/winston");
+
 class UserController {
   constructor() {
     this.model_user   = new ModelUser();
     this.errors       = errors
     this.knex         = global.knex
     this.emailHelper  = new emailHelper();
+    this.model_match  = new ModelMatch();
   }
   async login(req, res, next) {
     try {
@@ -78,7 +82,19 @@ class UserController {
   async profile(req,res,next){
     try{
       let user = await this.getProfile({id:req.user.id});
-       res.json({code:200, status:"ok", userObj: user})
+      let matchDetail = await this.model_match.GetAll({user_id:req.user.id});
+      for(let match of matchDetail){
+         let userDetail = await this.model_user.Get({id:match.oponent_id});
+         if(userDetail){
+          match.OponentDetail =  await this.getProfile({email:userDetail.email});;
+         }
+         
+      }
+      //let userDetail =  await this.model_match.getMatchDetail(req.user.id);
+      user.Match = matchDetail
+     
+      console.log(matchDetail)
+      res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
       next(this.errors.getError("ESS42205", ex));
@@ -254,6 +270,35 @@ class UserController {
       next(this.errors.getError("ESS42205", ex));
     }
   }
+  async userMatch(req,res,next){
+    try{
+      let user_id = req.user.id ;
+      let data = req.body;
+      let verifyMatch = await this.model_match.Get({user_id:user_id,oponent_id:data.oponentId});
+      let response;
+      if(verifyMatch){ // Update
+        console.log("Update")
+        let updateData = await this.model_match.Update({is_like:data.isLike},{id:verifyMatch.id});
+        response = {code:200,status:'ok',msg:"Data updated successfully ."}
+
+      }else{// Create
+        console.log("Create")
+        let insertObj ={user_id:user_id,oponent_id:data.oponentId,is_like : data.isLike,status:1,created_at:this.knex.raw("CURRENT_TIMESTAMP"),updated_at:this.knex.raw("CURRENT_TIMESTAMP")};
+        let insertMatch = await this.model_match.Create(insertObj);
+        if(insertMatch){
+          response = {code:200,status:'ok',msg:"Data inserted successfully."}
+        }
+
+      }
+     res.json(response);
+
+    }catch(ex){
+      console.log(ex);
+      next(this.errors.getError("ESS42205", ex));
+   
+    }
+
+  }
   async verifyAccessToken(token){
     let jwtObject = jwt.decode(token);
     return jwtObject.user_id;
@@ -263,12 +308,11 @@ class UserController {
   async getProfile(obj){
     console.log("OBB",obj)
     let userObj = await this.model_user.Get(obj);
-
     delete userObj.password;
     delete userObj.newPasswordTsoken;
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
-    if(userObj.facebook_id ==null){
+    if(userObj.facebook_id ===null){
       this.getProfilePicUrl(userObj);
     }
     
@@ -291,13 +335,11 @@ class UserController {
       if(user.profile_pic){
         path = process.env.BASE_URL+"upload/"+user.profile_pic;
       }
-    
       user.profile_pic = path;
     }catch(ex){
       console.log("Error in get profile pic",ex);
       user.profile_pic = "";
       return "";
-
     }
        
 

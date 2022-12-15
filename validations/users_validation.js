@@ -46,6 +46,10 @@ const validations = {
         latitude    : Joi.optional(),
         dob          : Joi.optional()
     }),
+    match: Joi.compile({
+        oponentId   : Joi.required(),
+        isLike      : Joi.required(),
+       }),
     
     
     

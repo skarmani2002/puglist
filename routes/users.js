@@ -66,6 +66,12 @@ router.get('/user/profile',
   router.get('/users',
   user_controller.getAllUsers.bind(user_controller));
 
+  router.post('/user/match',
+  auth_manager.Authenticate.bind(auth_manager),
+  UserValidation,
+  user_controller.userMatch.bind(user_controller));
+
+
 
 
   
