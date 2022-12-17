@@ -299,8 +299,17 @@ class UserController {
 
   }
   async verifyAccessToken(token){
-    let jwtObject = jwt.decode(token);
-    return jwtObject.user_id;
+    try{
+      console.log("TEST",token);
+      let jwtObject = jwt.decode(token);
+      console.log("TEST",jwtObject)
+      return jwtObject.user_id;
+    }catch(ex){
+      console.log(ex)
+      return false;
+
+    }
+   
 
   }
 
