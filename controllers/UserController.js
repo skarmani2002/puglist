@@ -17,7 +17,7 @@ class UserController {
   }
   async login(req, res, next) {
     try {
-      let user = await this.model_user.Get({email:req.body.email})
+      let user = await this.model_user.Get({email:req.body.email,facebook_id:null})
       let password = req.body.password;
       if (user && (await bcrypt.compare(password, user.password))) {
         // Create token
@@ -29,7 +29,7 @@ class UserController {
           }
         );
          // save user token
-         let userObj = await this.getProfile({email:req.body.email});
+         let userObj = await this.getProfile({id:user.id});
          userObj.access_token = token;
          res.json({code:200, status:"ok", userObj: userObj})
       }
@@ -44,12 +44,11 @@ class UserController {
     try {
       let data = req.body;
       var ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-      let verifyUser = await this.model_user.Get({email:data.email})
+      let verifyUser = await this.model_user.Get({email:data.email,facebook_id:null})
       if(verifyUser){
         return next(this.errors.getError("ESS42202"));
       }
       let encryptedPassword = await bcrypt.hash(data.password, 10);
-      console.log("User is new");
       let userObj = {
           name        : data.name,
           email       : data.email, 
@@ -62,7 +61,8 @@ class UserController {
       }
 
       let insertUser = await this.model_user.Create(userObj);
-      let user = await this.getProfile({email:data.email});
+      console.log("ADSF",insertUser)
+      let user = await this.getProfile({id:insertUser[0]});
       let createToken = await this.createToken(user);
       user.access_token  = createToken.accessToken;
       if(insertUser){
@@ -99,7 +99,53 @@ class UserController {
       next(this.errors.getError("ESS42205", ex));
     }
   }
+
   async registerFb(req,res,next){
+    try{
+        let data = req.body;
+        let user = await this.model_user.Get({facebook_id:data.uid});
+        let response ;
+        if(!user){
+          let userData = { facebook_id:data.uid,name : data.fullName , profile_pic: data.photoUrl,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP")};
+          let insertUser = await this.model_user.Create(userData);
+          let user = await this.model_user.Get({facebook_id:data.uid,email:data.email});
+          user.token = data.token;
+          let createToken = await this.createToken(user);
+          user.access_token  = createToken.accessToken;
+  
+          delete user.password;
+          response = {
+            status: true,
+            msg : "User created successfully",
+            code:200,
+            userObj: user,
+            isAccountCreated : true 
+          }
+        }else{
+          if(user.profile_pic !== data.photoUrl){
+            user.profile_pic = data.photoUrl;
+            await this.model_user.Update({profile_pic:data.photoUrl},{email:user.email,facebook_id:data.uid})
+        }
+        delete user.password;
+        let createToken = await this.createToken(user);
+        user.access_token  = createToken.accessToken;
+
+        user.token = data.token;
+        response = {
+          status: true,
+          msg : "User Login Successfull",
+          code:200,
+          userObj: user,
+          isAccountCreated : true 
+        }
+      }
+      
+      res.json(response)
+    }catch(ex){
+      console.log("Exception in FB register",ex);
+    }
+  }
+  async registerFb_x(req,res,next){
     try{
         let data = req.body;
         let accessTokenFlag = (await this.verifyAccessToken(data.token) === data.uid) ? true : false;

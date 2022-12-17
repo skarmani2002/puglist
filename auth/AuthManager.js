@@ -46,7 +46,7 @@ class AuthManager {
          // check if auth header is valid
             const decoded = jwt.verify(token, process.env.TOKEN_KEY);
             console.log("RRRR",decoded);
-            let verifyUserDb = await  this.user_model.Get({email:decoded.email});
+            let verifyUserDb = await  this.user_model.Get({id:decoded.id,email:decoded.email});
             if(verifyUserDb){
                 req.user = verifyUserDb;
                 isAuthenticated= true;
