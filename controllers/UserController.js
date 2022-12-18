@@ -285,7 +285,7 @@ class UserController {
   }
   async updateProfile(req,res,next){
     try{
-      let user_id = req.user.user_id;
+      let user_id = req.user.id;
       req.body.updated_at = this.knex.raw("CURRENT_TIMESTAMP");
       let updateUser = await this.model_user.Update(req.body,{id:user_id});
       if(updateUser){

@@ -44,7 +44,7 @@ const validations = {
         about       : Joi.optional(),
         longitude   : Joi.optional(),
         latitude    : Joi.optional(),
-        dob          : Joi.optional()
+        dob         : Joi.optional()
     }),
     match: Joi.compile({
         oponentId   : Joi.required(),
