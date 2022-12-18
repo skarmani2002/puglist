@@ -303,8 +303,10 @@ class UserController {
       let users = await this.model_user.GetAll({status:1});
       let repsonse = {code:404, status:false, msg: "Users not found", userObj:[{}]}
       for(let user of users){
-        user =  await this.getProfile({id:user.id})
-      }
+        if(user.facebook_id ==null){
+          user.profile_pic =   this.getProfilePicUrl(user)
+        }
+      }  
       if(users){
         repsonse = {code:200,status:'ok',userObj:users};
         
@@ -366,10 +368,13 @@ class UserController {
     delete userObj.newPasswordTsoken;
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
-    if(userObj.facebook_id ===null){
-      this.getProfilePicUrl(userObj);
+    if(userObj.facebook_id ==null){
+      console.log("SSDFSDF");
+      let path = await this.getProfilePicUrl(userObj);
+      console.log("PATH",path)
+      userObj.profile_pic = path;
     }
-    
+    console.log("UserObj",userObj)
     return userObj;
 
   }
@@ -383,13 +388,15 @@ class UserController {
         accessToken,
     };
   }
-  getProfilePicUrl(user){
+   getProfilePicUrl(user){
     try{
+      console.log("USER",user)
       let path = "";
       if(user.profile_pic){
         path = process.env.BASE_URL+"upload/"+user.profile_pic;
       }
       user.profile_pic = path;
+      return path;;
     }catch(ex){
       console.log("Error in get profile pic",ex);
       user.profile_pic = "";
