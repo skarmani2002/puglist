@@ -279,7 +279,7 @@ class UserController {
       
     }catch(ex){
       console.log(ex);
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42211", ex));
     }
 
   }
@@ -294,7 +294,7 @@ class UserController {
       }
     }catch(ex){
       console.log(ex);
-      next(this.errors.getError("ESS50001", ex));
+      next(this.errors.getError("ESS42211", ex));
     }
 
   }
@@ -303,7 +303,7 @@ class UserController {
       let users = await this.model_user.GetAll({status:1});
       let repsonse = {code:404, status:false, msg: "Users not found", userObj:[{}]}
       for(let user of users){
-        user =  await this.getProfilePicUrl(user)
+        user =  await this.getProfile({id:user.id})
       }
       if(users){
         repsonse = {code:200,status:'ok',userObj:users};

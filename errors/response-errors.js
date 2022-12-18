@@ -103,6 +103,12 @@ const customErrors = {
         error_summary: "Users not found.",
         error_message: "Users not found."
     },
+    ESS42211: {
+        status: 422,
+        error_code: `ESS42211`,
+        error_summary: "Something went wrong. Please try again.",
+        error_message: "Something went wrong. Please try again.."
+    },
     
     
     
