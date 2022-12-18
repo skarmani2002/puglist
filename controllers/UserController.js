@@ -22,10 +22,10 @@ class UserController {
       if (user && (await bcrypt.compare(password, user.password))) {
         // Create token
         const token = jwt.sign(
-          { user_id: user.id, email:user.email },
+          { id: user.id, email:user.email },
           process.env.TOKEN_KEY,
           {
-            expiresIn: process.env.EXPIRE_IN
+           // expiresIn: process.env.EXPIRE_IN
           }
         );
          // save user token
@@ -93,6 +93,16 @@ class UserController {
       user.Match = matchDetail
      
       console.log(matchDetail)
+
+
+      let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id});
+      for(let match of whoLikesMe){
+        let userDetail = await this.model_user.Get({id:match.user_id});
+        if(userDetail){
+         match.OponentDetail =  await this.getProfile({email:userDetail.email});
+        }
+      }
+      user.whoLikesMe = whoLikesMe
       res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
