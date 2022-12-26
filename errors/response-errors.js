@@ -109,6 +109,13 @@ const customErrors = {
         error_summary: "Something went wrong. Please try again.",
         error_message: "Something went wrong. Please try again.."
     },
+    ESS42212: {
+        status: 422,
+        error_code: `ESS42212`,
+        error_summary: "File Upload Validation Failed.",
+        error_message: "file upload: Only image files are allowed.."
+    },
+    
     
     
     

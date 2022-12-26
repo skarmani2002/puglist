@@ -352,6 +352,18 @@ class UserController {
     }catch(ex){
       console.log(ex);
       next(this.errors.getError("ESS42205", ex));
+    }
+
+  }
+  async userShort(req,res,next){
+    try{
+      let user_id = req.user.id ;
+      let data = req.body;
+      console.log("USER",data,user_id)
+
+    }catch(ex){
+      console.log(ex);
+      next(this.errors.getError("ESS42205", ex));
    
     }
 

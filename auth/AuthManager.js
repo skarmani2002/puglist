@@ -45,7 +45,7 @@ class AuthManager {
         try{
          // check if auth header is valid
             const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-            console.log("RRRR",decoded);
+            console.log("Middle Layer Decode",decoded);
             let verifyUserDb = await  this.user_model.Get({id:decoded.id,email:decoded.email});
             if(verifyUserDb){
                 req.user = verifyUserDb;

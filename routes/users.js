@@ -71,6 +71,15 @@ router.get('/user/profile',
   UserValidation,
   user_controller.userMatch.bind(user_controller));
 
+  
+router.post('/user/short',
+  auth_manager.Authenticate.bind(auth_manager),
+  uploader.uploadUserVideo('short', {
+  customFileName: "short",
+  path: "",
+  overideFileName: false
+  }),
+ user_controller.userShort.bind(user_controller));
 
 
 
