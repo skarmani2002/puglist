@@ -316,6 +316,7 @@ class UserController {
         if(user.facebook_id ==null){
           user.profile_pic =   this.getProfilePicUrl(user)
         }
+          await this.getUserShort(user)
       }  
       if(users){
         repsonse = {code:200,status:'ok',userObj:users};
@@ -358,14 +359,15 @@ class UserController {
   async userShort(req,res,next){
     try{
       let user_id = req.user.id ;
-      let data = req.body;
-      console.log("USER",data,user_id)
-
+      if(req.body.user_short){
+        let updateUser = await this.model_user.Update({user_short:req.body.user_short},{id:user_id});
+      }
+     let  response = {code:200,status:'ok',msg:"Short inserted successfully."}
+    res.json(response);
     }catch(ex){
       console.log(ex);
       next(this.errors.getError("ESS42205", ex));
-   
-    }
+   }
 
   }
   async verifyAccessToken(token){
@@ -391,12 +393,11 @@ class UserController {
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
     if(userObj.facebook_id ==null){
-      console.log("SSDFSDF");
       let path = await this.getProfilePicUrl(userObj);
-      console.log("PATH",path)
       userObj.profile_pic = path;
     }
-    console.log("UserObj",userObj)
+ 
+    await this.getUserShort(userObj);
     return userObj;
 
   }
@@ -414,6 +415,7 @@ class UserController {
     try{
       console.log("USER",user)
       let path = "";
+     
       if(user.profile_pic){
         path = process.env.BASE_URL+"upload/"+user.profile_pic;
       }
@@ -428,7 +430,21 @@ class UserController {
 
   }
 
-  
+  async getUserShort(user){
+    try{
+      let user_short = "";
+      if(user.user_short){
+        user_short = process.env.BASE_URL+"upload/"+user.user_short;
+      }
+      user.user_short = user_short;
+      return user;;
+    }catch(ex){
+      console.log("Error in get user short",ex);
+      user.user_short = "";
+      return "";
+    }
+
+  }
 }
 
 module.exports = UserController;
