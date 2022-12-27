@@ -28,6 +28,19 @@ class ModelMatch {
         let response = await this.knex.raw(sql);
         return response[0].length>0?response[0]:null;
     }
+    async getfightMatch(user_id){
+        let sql = "SELECT group_concat(oponent_id) as oponent_id from puglist_match where user_id ="+user_id+" and is_like =1";
+        let response = await this.knex.raw(sql);
+        if(response[0].length>0){
+            let sql2 = "SELECT *  from puglist_match WHERE user_id IN("+response[0][0].oponent_id+") and is_like =1";
+            let respons2 = await this.knex.raw(sql2);
+            return respons2[0].length>0?respons2[0]:null;
+        }
+        return null;
+
+        
+
+    }
     
 }
 

@@ -91,11 +91,7 @@ class UserController {
       }
       //let userDetail =  await this.model_match.getMatchDetail(req.user.id);
       user.Match = matchDetail
-     
-      console.log(matchDetail)
-
-
-      let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id});
+      let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:1});
       for(let match of whoLikesMe){
         let userDetail = await this.model_user.Get({id:match.user_id});
         if(userDetail){
@@ -103,6 +99,28 @@ class UserController {
         }
       }
       user.whoLikesMe = whoLikesMe
+
+
+      // Who dislike me 
+      let whoDisLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:0});
+      for(let match of whoDisLikesMe){
+        let userDetail = await this.model_user.Get({id:match.user_id});
+        if(userDetail){
+         match.OponentDetail =  await this.getProfile({email:userDetail.email});
+        }
+      }
+      user.whoDisLikesMe = whoDisLikesMe
+
+      // Fight Match
+      let fightMatchAll = await this.model_match.getfightMatch(req.user.id);
+      let fightMatchAllArrray=[];
+      for(let singlematch of fightMatchAll ){
+        if(singlematch.oponent_id == req.user.id ){
+          fightMatchAllArrray.push( await this.getProfile({id:singlematch.user_id}))
+        }
+      }
+      console.log("Fight MAtch",fightMatchAllArrray)
+      user.fightMatch = fightMatchAllArrray;
       res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
