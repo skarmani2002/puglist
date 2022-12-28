@@ -89,7 +89,6 @@ class UserController {
          }
          
       }
-      //let userDetail =  await this.model_match.getMatchDetail(req.user.id);
       user.Match = matchDetail
       let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:1});
       for(let match of whoLikesMe){
@@ -102,14 +101,14 @@ class UserController {
 
 
       // Who dislike me 
-      let whoDisLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:0});
+    /*  let whoDisLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:0});
       for(let match of whoDisLikesMe){
         let userDetail = await this.model_user.Get({id:match.user_id});
         if(userDetail){
          match.OponentDetail =  await this.getProfile({email:userDetail.email});
         }
       }
-      user.whoDisLikesMe = whoDisLikesMe
+      user.whoDisLikesMe = whoDisLikesMe*/
 
       // Fight Match
       let fightMatchAll = await this.model_match.getfightMatch(req.user.id);
@@ -119,8 +118,27 @@ class UserController {
           fightMatchAllArrray.push( await this.getProfile({id:singlematch.user_id}))
         }
       }
-      console.log("Fight MAtch",fightMatchAllArrray)
+
+      let allUsers = await this.model_user.GetAll({status:1});
+      let allUserObj =[];
+      for(let user of allUsers){
+        if(user.email == req.user.email){
+          continue;
+        }
+        if(user.facebook_id ==null){
+          user.profile_pic =   this.getProfilePicUrl(user)
+        }
+        await this.getUserShort(user)
+        for(let fa of fightMatchAllArrray){
+
+          if(user.email !=fa.email){
+            allUserObj.push(user)
+          }
+        }
+      }  
       user.fightMatch = fightMatchAllArrray;
+       user.allUserObj = allUserObj;
+
       res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
