@@ -132,6 +132,7 @@ class UserController {
         for(let fa of fightMatchAllArrray){
 
           if(user.email !=fa.email){
+            user.OponentDetail =  await this.getProfile({email:user.email});
             allUserObj.push(user)
           }
         }
