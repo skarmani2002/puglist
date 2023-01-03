@@ -74,7 +74,6 @@ class UserController {
       }
     } catch (ex) {
       console.log(ex);
-      
       next(this.errors.getError("ESS42205", ex));
     }
   }
@@ -112,7 +111,7 @@ class UserController {
 
       // Fight Match
       let fightMatchAll = await this.model_match.getfightMatch(req.user.id);
-      let fightMatchAllArrray=[];
+      let fightMatchAllArrray= [];
       for(let singlematch of fightMatchAll ){
         if(singlematch.oponent_id == req.user.id ){
           fightMatchAllArrray.push( await this.getProfile({id:singlematch.user_id}))
@@ -125,21 +124,31 @@ class UserController {
         if(user.email == req.user.email){
           continue;
         }
-        if(user.facebook_id ==null){
+
+        let result = fightMatchAllArrray.filter(function(v) {
+          return v.email === user.email; // Filter out the appropriate one
+        });
+        if(result.length==0){
+        console.log("Lattest TEst",result);
+        if(user.facebook_id == null){
           user.profile_pic =   this.getProfilePicUrl(user)
         }
         await this.getUserShort(user)
-        for(let fa of fightMatchAllArrray){
+        user.OponentDetail =  await this.getProfile({email:user.email});
+        allUserObj.push(user)
+      }
+       /* for(let fa of fightMatchAllArrray){
 
           if(user.email !=fa.email){
             user.OponentDetail =  await this.getProfile({email:user.email});
+            console.log("USER PUSH",user.email,user.id)
             allUserObj.push(user)
           }
-        }
+        }*/
+       
       }  
       user.fightMatch = fightMatchAllArrray;
-       user.allUserObj = allUserObj;
-
+      user.allUserObj = allUserObj;
       res.json({code:200, status:"ok", userObj: user})
     }catch(ex){
       console.log(ex,"-----------");
@@ -423,7 +432,7 @@ class UserController {
   }
 
   async getProfile(obj){
-    console.log("OBB",obj)
+    
     let userObj = await this.model_user.Get(obj);
     delete userObj.password;
     delete userObj.newPasswordTsoken;
@@ -450,7 +459,6 @@ class UserController {
   }
    getProfilePicUrl(user){
     try{
-      console.log("USER",user)
       let path = "";
      
       if(user.profile_pic){
