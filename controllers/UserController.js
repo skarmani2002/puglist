@@ -114,7 +114,11 @@ class UserController {
       let fightMatchAllArrray= [];
       for(let singlematch of fightMatchAll ){
         if(singlematch.oponent_id == req.user.id ){
-          fightMatchAllArrray.push( await this.getProfile({id:singlematch.user_id}))
+          let userData = await this.getProfile({id:singlematch.user_id});
+          if(userData.id != req.user.id){
+            fightMatchAllArrray.push(userData)
+          }
+          
         }
       }
 
