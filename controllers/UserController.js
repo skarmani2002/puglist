@@ -6,6 +6,7 @@ const path        = require( "path" );
 const fs          = require( 'fs' );
 let emailHelper   = require('../helpers/email-helper');
 const ModelMatch  = require('../models/Match');
+const guid = require('guid');
 
 class UserController {
   constructor() {
@@ -57,11 +58,11 @@ class UserController {
           profile_pic : data.profile_pic,
           status      : 1,
           created_at  : this.knex.raw("CURRENT_TIMESTAMP"),
-          updated_at  : this.knex.raw("CURRENT_TIMESTAMP")
+          updated_at  : this.knex.raw("CURRENT_TIMESTAMP"),
+          salt        : guid.raw()
       }
 
       let insertUser = await this.model_user.Create(userObj);
-      console.log("ADSF",insertUser)
       let user = await this.getProfile({id:insertUser[0]});
       let createToken = await this.createToken(user);
       user.access_token  = createToken.accessToken;
@@ -112,6 +113,8 @@ class UserController {
       // Fight Match
       let fightMatchAll = await this.model_match.getfightMatch(req.user.id);
       let fightMatchAllArrray= [];
+      if(fightMatchAll){
+     
       for(let singlematch of fightMatchAll ){
         if(singlematch.oponent_id == req.user.id ){
           let userData = await this.getProfile({id:singlematch.user_id});
@@ -121,6 +124,7 @@ class UserController {
           
         }
       }
+    }
 
       let allUsers = await this.model_user.GetAll({status:1});
       let allUserObj =[];
@@ -138,7 +142,7 @@ class UserController {
           user.profile_pic =   this.getProfilePicUrl(user)
         }
         await this.getUserShort(user)
-        user.OponentDetail =  await this.getProfile({email:user.email});
+        user.OponentDetail =  await this.getProfile({id:user.id});
         allUserObj.push(user)
       }
        /* for(let fa of fightMatchAllArrray){
@@ -166,7 +170,7 @@ class UserController {
         let user = await this.model_user.Get({facebook_id:data.uid});
         let response ;
         if(!user){
-          let userData = { facebook_id:data.uid,name : data.fullName , profile_pic: data.photoUrl,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP")};
+          let userData = { facebook_id:data.uid,name : data.fullName , profile_pic: data.photoUrl,email :data.email, status:1,  created_at  :this.knex.raw("CURRENT_TIMESTAMP"),updated_at  : this.knex.raw("CURRENT_TIMESTAMP"),salt : guid.raw()};
           let insertUser = await this.model_user.Create(userData);
           let user = await this.model_user.Get({facebook_id:data.uid,email:data.email});
           user.token = data.token;
