@@ -12,6 +12,7 @@ const validations = {
         password    : Joi.string().max(50),
         gender      : Joi.string().optional(),
         profile_pic : Joi.string().optional(),
+        user_short : Joi.string().optional(),
     }),
     facebook_registration: Joi.compile({
         fullName        : Joi.string().required(),
