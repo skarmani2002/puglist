@@ -80,7 +80,7 @@ class UserController {
   async profile(req,res,next){
     try{
       let user = await this.getProfile({id:req.user.id});
-      let matchDetail = await this.model_match.GetAll({user_id:req.user.id});
+      /*let matchDetail = await this.model_match.GetAll({user_id:req.user.id});
       for(let match of matchDetail){
          let userDetail = await this.model_user.Get({id:match.oponent_id});
          if(userDetail){
@@ -88,15 +88,15 @@ class UserController {
          }
          
       }
-      user.Match = matchDetail
-      let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:1});
+      user.Match = matchDetail*/
+      /*let whoLikesMe =  await this.model_match.GetAll({oponent_id:req.user.id,is_like:1});
       for(let match of whoLikesMe){
         let userDetail = await this.model_user.Get({id:match.user_id});
         if(userDetail){
          match.OponentDetail =  await this.getProfile({email:userDetail.email});
         }
       }
-      user.whoLikesMe = whoLikesMe
+      user.whoLikesMe = whoLikesMe*/
 
 
       // Who dislike me 
