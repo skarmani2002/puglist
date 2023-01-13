@@ -387,18 +387,25 @@ class UserController {
       let user_id = req.user.id ;
       let data = req.body;
       let verifyMatch = await this.model_match.Get({user_id:user_id,oponent_id:data.oponentId});
+      let isFightExist = await this.model_match.Get({user_id:data.oponentId,oponent_id:user_id,status:1});
+      let both_key = false;
+      if(isFightExist){
+        both_key = true;
+
+      }
+   
       let response;
       if(verifyMatch){ // Update
         console.log("Update")
         let updateData = await this.model_match.Update({is_like:data.isLike},{id:verifyMatch.id});
-        response = {code:200,status:'ok',msg:"Data updated successfully ."}
+        response = {code:200,status:'ok',msg:"Data updated successfully .",isBoth:both_key}
 
       }else{// Create
         console.log("Create")
         let insertObj ={user_id:user_id,oponent_id:data.oponentId,is_like : data.isLike,status:1,created_at:this.knex.raw("CURRENT_TIMESTAMP"),updated_at:this.knex.raw("CURRENT_TIMESTAMP")};
         let insertMatch = await this.model_match.Create(insertObj);
         if(insertMatch){
-          response = {code:200,status:'ok',msg:"Data inserted successfully."}
+          response = {code:200,status:'ok',msg:"Data inserted successfully.",isBoth:both_key}
         }
 
       }

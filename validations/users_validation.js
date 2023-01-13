@@ -13,7 +13,8 @@ const validations = {
         gender      : Joi.string().optional(),
         profile_pic : Joi.string().optional(),
         user_short  : Joi.string().optional(),
-        description : Joi.optional()
+        description : Joi.optional(),
+        phone_number :  Joi.optional(),
     }),
     facebook_registration: Joi.compile({
         fullName        : Joi.string().required(),
@@ -21,7 +22,8 @@ const validations = {
         photoUrl        : Joi.string().optional(),
         email           : Joi.string().required(),
         token           : Joi.string().optional(),
-        description     : Joi.optional()
+        description     : Joi.optional(),
+        phone_number    :  Joi.optional(),
     }),
     update_password: Joi.compile({
         oldPassword        : Joi.string().required(),
@@ -48,7 +50,8 @@ const validations = {
         longitude   : Joi.optional(),
         latitude    : Joi.optional(),
         dob         : Joi.optional(),
-        description : Joi.optional()
+        description : Joi.optional(),
+        phone_number :  Joi.optional()
     }),
     match: Joi.compile({
         oponentId   : Joi.required(),
