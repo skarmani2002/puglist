@@ -387,7 +387,7 @@ class UserController {
       let user_id = req.user.id ;
       let data = req.body;
       let verifyMatch = await this.model_match.Get({user_id:user_id,oponent_id:data.oponentId});
-      
+      let both_key = false;
    
       let response;
       if(verifyMatch){ // Update
@@ -406,7 +406,7 @@ class UserController {
       }
       let isFightExist = await this.model_match.Get({user_id:data.oponentId,oponent_id:user_id,is_like:1});
       console.log("USer Exists",isFightExist)
-      let both_key = false;
+     
       if(isFightExist){
         both_key = true;
 
