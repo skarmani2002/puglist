@@ -189,10 +189,10 @@ class UserController {
             isAccountCreated : true 
           }
         }else{
-          if(user.profile_pic !== data.photoUrl){
-            user.profile_pic = data.photoUrl;
-            await this.model_user.Update({profile_pic:data.photoUrl},{email:user.email,facebook_id:data.uid})
-        }
+         // if(user.profile_pic !== data.photoUrl){
+           // user.profile_pic = data.photoUrl;
+            //await this.model_user.Update({profile_pic:data.photoUrl},{email:user.email,facebook_id:data.uid})
+          //}
         delete user.password;
         let createToken = await this.createToken(user);
         user.access_token  = createToken.accessToken;
