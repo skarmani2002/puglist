@@ -49,6 +49,9 @@ class UserController {
       if(verifyUser){
         return next(this.errors.getError("ESS42202"));
       }
+      if(data.profile_pic){
+        data.profile_pic = process.env.BASE_URL+"upload/"+data.profile_pic;
+      }
       let encryptedPassword = await bcrypt.hash(data.password, 10);
       let userObj = {
           name        : data.name,
@@ -351,6 +354,10 @@ class UserController {
     try{
       let user_id = req.user.id;
       req.body.updated_at = this.knex.raw("CURRENT_TIMESTAMP");
+      console.log("Req Body",req.body)
+      if(req.body.profile_pic){
+        req.body.profile_pic = process.env.BASE_URL+"upload/"+req.body.profile_pic;
+      }
       let updateUser = await this.model_user.Update(req.body,{id:user_id});
       if(updateUser){
         let userObj = await this.getProfile({id:user_id});
@@ -367,9 +374,9 @@ class UserController {
       let users = await this.model_user.GetAll({status:1});
       let repsonse = {code:404, status:false, msg: "Users not found", userObj:[{}]}
       for(let user of users){
-        if(user.facebook_id ==null){
+       // if(user.facebook_id ==null){
           user.profile_pic =   this.getProfilePicUrl(user)
-        }
+       // }
           await this.getUserShort(user)
       }  
       if(users){
@@ -437,9 +444,7 @@ class UserController {
   }
   async verifyAccessToken(token){
     try{
-      console.log("TEST",token);
       let jwtObject = jwt.decode(token);
-      console.log("TEST",jwtObject)
       return jwtObject.user_id;
     }catch(ex){
       console.log(ex)
@@ -451,16 +456,15 @@ class UserController {
   }
 
   async getProfile(obj){
-    
     let userObj = await this.model_user.Get(obj);
     delete userObj.password;
     delete userObj.newPasswordTsoken;
     delete userObj.forgetPasswordTimestamp;
     delete userObj.password_token;
-    if(userObj.facebook_id ==null){
-      let path = await this.getProfilePicUrl(userObj);
-      userObj.profile_pic = path;
-    }
+   // if(userObj.facebook_id ==null){
+    let path = await this.getProfilePicUrl(userObj);
+    userObj.profile_pic = path;
+   // }
  
     await this.getUserShort(userObj);
     return userObj;
@@ -476,7 +480,7 @@ class UserController {
         accessToken,
     };
   }
-   getProfilePicUrl(user){
+   getProfilePicUrlX(user){
     try{
       let path = "";
      
@@ -490,9 +494,18 @@ class UserController {
       user.profile_pic = "";
       return "";
     }
-       
-
   }
+
+  getProfilePicUrl(user){
+    try{
+       return user.profile_pic;
+    }catch(ex){
+      console.log("Error in get profile pic",ex);
+      user.profile_pic = "";
+      return "";
+    }
+  }
+
 
   async getUserShort(user){
     try{
