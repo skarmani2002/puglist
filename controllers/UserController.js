@@ -494,7 +494,8 @@ class UserController {
     try{
       let user_short = "";
       if(user.user_short){
-        user_short = process.env.BASE_URL+"upload/"+user.user_short;
+       // user_short = process.env.BASE_URL+"upload/"+user.user_short;
+        user_short = process.env.BASE_URLS+"upload/"+user.user_short;
       }
       user.user_short = user_short;
       return user;;
