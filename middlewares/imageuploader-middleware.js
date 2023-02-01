@@ -8,7 +8,9 @@ const mkdirp = require('mkdirp');
 let fs = require('fs');
 const multer = require('multer');
 const util = require('util');
- const uploadPath = __dirname + "/../upload/";
+const uploadPath = __dirname + "/../upload/";
+const uploadPathVideo = __dirname + "../../../public_html/puglist/upload";
+
 const Joi = require("joi");
 const mkdir = util.promisify(fs.mkdir);
 const errors = require("../errors/response-errors");
@@ -97,8 +99,8 @@ const uploadVideoMedia = (media, option) => {
     let storage = multer.diskStorage({
         destination: (req, file, cb) => {
             option.destination(req, (data) => {
-                let destinationPath = uploadPath + data;
-                //console.log("Destination path", destinationPath);
+                let destinationPath = uploadPathVideo + data;
+                console.log("Destination path", destinationPath);
               
                 if (!directoryExists.sync(destinationPath)) {
 
@@ -158,7 +160,7 @@ const uploadVideoMedia = (media, option) => {
                 status: 422,
                 error_code: `ESS42204`,
                 title: `File Upload Validation Failed`,
-                detail: `file upload: Only image files are allowed.`
+                detail: `file upload: Only videos mp4 files are allowed.`
             };
             // accept image only
             if (!file.originalname.match(/\.(mp4|mov)$/)) {
